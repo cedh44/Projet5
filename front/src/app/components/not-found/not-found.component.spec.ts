@@ -3,7 +3,7 @@ import { expect } from '@jest/globals';
 
 import { NotFoundComponent } from './not-found.component';
 
-describe('NotFoundComponent', () => {
+describe('NotFoundComponent Test suites', () => {
   let component: NotFoundComponent;
   let fixture: ComponentFixture<NotFoundComponent>;
 
