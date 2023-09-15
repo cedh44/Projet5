@@ -16,7 +16,7 @@ import {SessionApiService} from '../../services/session-api.service';
 import {FormComponent} from './form.component';
 import {Observable, of} from "rxjs";
 import {Session} from "../../interfaces/session.interface";
-import {Router} from "@angular/router";
+import {ActivatedRoute, convertToParamMap, Router} from "@angular/router";
 
 describe('FormComponent Test Suites', () => {
   let component: FormComponent;
@@ -30,9 +30,28 @@ describe('FormComponent Test Suites', () => {
 
   const mockSessionService = {
     sessionInformation: {
-      admin: true
+      admin: false
     }
   }
+
+  class MockSnackBar {
+    open() {
+      return {
+        onAction: () => of({}),
+      };
+    }
+  }
+
+  class MockRouter {
+    get url(): string {
+      return 'update';
+    }
+
+    navigate(): Promise<boolean> {
+      return new Promise<boolean>((resolve, _) => resolve(true));
+    }
+  }
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [FormComponent],
@@ -49,9 +68,12 @@ describe('FormComponent Test Suites', () => {
         BrowserAnimationsModule
       ],
       providers: [
-        //{ provide: Router, useValue: { navigate : jest.fn() },},
+        {provide: Router, useClass: MockRouter},
         {provide: SessionService, useValue: mockSessionService},
-        //{ provide: MatSnackBar, useValue: { open: jest.fn(),},},
+        {provide: MatSnackBar, useClass: MockSnackBar},
+        {
+          provide: ActivatedRoute, useValue: {snapshot: {paramMap: convertToParamMap({id: '1'})}},
+        },
         SessionApiService,
       ]
     })
@@ -80,6 +102,14 @@ describe('FormComponent Test Suites', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should init component when update', () => {
+    const spySessionApiService = jest.spyOn(sessionApiService, 'detail').mockReturnValue(session$);
+    //const spyRouter = jest.spyOn(router, 'navigate').mockReturnValueOnce('update');
+    component.ngOnInit();
+    // On vérifie que sessionApiService.create a bien été appelé
+    expect(spySessionApiService).toHaveBeenCalled();
+  })
 
   it('should call submit form to create session', () => {
     component.onUpdate = false;

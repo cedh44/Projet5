@@ -29,6 +29,25 @@ describe('MeComponent Test Suites', () => {
     },
     logOut: jest.fn()
   }
+
+  class MockSnackBar {
+    open() {
+      return {
+        onAction: () => of({}),
+      };
+    }
+  }
+
+  class MockRouter {
+    get url(): string {
+      return 'update';
+    }
+
+    navigate(): Promise<boolean> {
+      return new Promise<boolean>((resolve, _) => resolve(true));
+    }
+  }
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [MeComponent],
@@ -41,14 +60,11 @@ describe('MeComponent Test Suites', () => {
         MatIconModule,
         MatInputModule
       ],
-      providers: [{provide: SessionService, useValue: mockSessionService},
+      providers: [
         UserService,
-        {
-          provide: Router, //Mock du router
-          useValue: {
-            navigate: jest.fn(),
-          },
-        }
+        {provide: Router, useClass: MockRouter},
+        {provide: SessionService, useValue: mockSessionService},
+        {provide: MatSnackBar, useClass: MockSnackBar},
       ]
     })
       .compileComponents();
