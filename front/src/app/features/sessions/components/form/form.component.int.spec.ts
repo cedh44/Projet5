@@ -21,11 +21,23 @@ import {ActivatedRoute, convertToParamMap, Router} from "@angular/router";
 describe('FormComponent Test Suites When Init', () => {
   let component: FormComponent;
   let fixture: ComponentFixture<FormComponent>;
+  let sessionApiService: SessionApiService;
+  let sessionService: SessionService;
+  let matSnackBar: MatSnackBar;
   let router: Router;
+  let session: Session;
 
   const mockSessionService = {
     sessionInformation: {
       admin: false
+    }
+  }
+
+  class MockSnackBar {
+    open() {
+      return {
+        onAction: () => of({}),
+      };
     }
   }
 
@@ -57,29 +69,72 @@ describe('FormComponent Test Suites When Init', () => {
       providers: [
         {provide: Router, useClass: MockRouter},
         {provide: SessionService, useValue: mockSessionService},
-        {provide: ActivatedRoute, useValue: {snapshot: {paramMap: convertToParamMap({id: '1'})}},},
+        {provide: MatSnackBar, useClass: MockSnackBar},
+        {
+          provide: ActivatedRoute, useValue: {snapshot: {paramMap: convertToParamMap({id: '1'})}},
+        },
+        SessionApiService,
       ]
     })
       .compileComponents();
 
     fixture = TestBed.createComponent(FormComponent);
     component = fixture.componentInstance;
+    sessionApiService = TestBed.inject(SessionApiService);
+    sessionService = TestBed.inject(SessionService);
+    matSnackBar = TestBed.inject(MatSnackBar);
     router = TestBed.inject(Router);
     fixture.detectChanges();
+    session = { // Création d'une session
+      name: 'Séance Découverte',
+      description: 'Session pour les débutants',
+      date: new Date(),
+      teacher_id: 1,
+      users: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should make the form incorrect when empty', () => {
+    component.sessionForm?.setValue({
+      name: '',
+      date: '',
+      teacher_id: '',
+      description: ''
+    })
+    expect(component.sessionForm?.valid).toBeFalsy();
   });
 
-  it('should init component when not update', () => {
+  it('should call submit form to create session', () => {
+    component.onUpdate = false;
+    const spySessionApiService = jest.spyOn(sessionApiService, 'create').mockReturnValue(of(session));
+    const spyMatSnackBar = jest.spyOn(matSnackBar, 'open');
+    const spyRouter = jest.spyOn(router, 'navigate');
+
     component.ngOnInit();
     // On vérifie que les données du formulaire sont bien initialisées
     expect(component.sessionForm?.get('name')?.value).toEqual('');
     expect(component.sessionForm?.get('date')?.value).toEqual('');
     expect(component.sessionForm?.get('teacher_id')?.value).toEqual('');
     expect(component.sessionForm?.get('description')?.value).toEqual('');
-  })
+    // Valorisation du formulaire
+    component.sessionForm?.setValue({
+      name: session.name,
+      date: session.date,
+      teacher_id: 1,
+      description: session.description
+    })
+    // On vérifie que le formulaire est valide
+    expect(component.sessionForm?.valid).toBeTruthy();
+    component.submit();
+    // On vérifie que sessionApiService.create a bien été appelé
+    expect(spySessionApiService).toHaveBeenCalled();
+    // On vérifie que matSnackBar.open a bien été appelé avec les bons paramètres
+    expect(spyMatSnackBar).toHaveBeenCalledWith('Session created !', 'Close', {duration: 3000});
+    // On vérifie que le navigate vers 'sessions' a été appelé
+    expect(spyRouter).toHaveBeenCalledWith(['sessions']);
+  });
 });
 
 describe('FormComponent Test Suites When Update', () => {
@@ -105,7 +160,7 @@ describe('FormComponent Test Suites When Update', () => {
     }
   }
 
-  class MockRouterUpdate {
+  class MockRouter {
     get url(): string {
       return 'update';
     }
@@ -131,7 +186,7 @@ describe('FormComponent Test Suites When Update', () => {
         BrowserAnimationsModule
       ],
       providers: [
-        {provide: Router, useClass: MockRouterUpdate},
+        {provide: Router, useClass: MockRouter},
         {provide: SessionService, useValue: mockSessionService},
         {provide: MatSnackBar, useClass: MockSnackBar},
         {
@@ -149,23 +204,41 @@ describe('FormComponent Test Suites When Update', () => {
     matSnackBar = TestBed.inject(MatSnackBar);
     router = TestBed.inject(Router);
     fixture.detectChanges();
-    session = { // Création d'un observable de type Session avec des données vides
-      id: 0,
-      name: '',
-      description: '',
-      date: new Date(),
-      teacher_id: 0,
+    session = {
+      name: 'Séance Découverte',
+      description: 'Session pour les débutants',
+      date: new Date('2023-12-01'),
+      teacher_id: 1,
       users: [],
       createdAt: new Date(),
       updatedAt: new Date()
     };
   });
 
-  it('should init component when update', () => {
-    const spySessionApiService = jest.spyOn(sessionApiService, 'detail').mockReturnValue(of(session));
-    component.ngOnInit();
-    // On vérifie que sessionApiService.create a bien été appelé
-    expect(spySessionApiService).toHaveBeenCalled();
-  })
+  it('should call submit form to update session', () => {
+    component.onUpdate = true;
+    const spySessionApiServiceUpdate = jest.spyOn(sessionApiService, 'update').mockReturnValue(of(session));
+    const spySessionApiServiceDetail = jest.spyOn(sessionApiService, 'detail').mockReturnValue(of(session));
 
+    const spyMatSnackBar = jest.spyOn(matSnackBar, 'open');
+    const spyRouter = jest.spyOn(router, 'navigate');
+    component.ngOnInit();
+    // On vérifie que les données reçues sont bien affichées par défaut dans le formulaire
+    expect(component.sessionForm?.get('name')?.value).toEqual('Séance Découverte');
+    expect(component.sessionForm?.get('date')?.value).toEqual('2023-12-01');
+    expect(component.sessionForm?.get('teacher_id')?.value).toEqual(1);
+    expect(component.sessionForm?.get('description')?.value).toEqual('Session pour les débutants');
+    // On vérifie que sessionService.detail a bien été appelé
+    expect(spySessionApiServiceDetail).toHaveBeenCalled();
+    // On change une donnée dans le formulaire
+    component.sessionForm?.controls['description'].setValue('Session pour tous');
+    // On soumet le formulaire avec la nouvelle donnée
+    component.submit();
+    // On vérifie que sessionApiService.update a bien été appelé
+    expect(spySessionApiServiceUpdate).toHaveBeenCalled();
+    // On vérifie que matSnackBar.open a bien été appelé avec les bons paramètres
+    expect(spyMatSnackBar).toHaveBeenCalledWith('Session updated !', 'Close', {duration: 3000});
+    // On vérifie que le navigate vers 'sessions' a été appelé
+    expect(spyRouter).toHaveBeenCalledWith(['sessions']);
+  });
 });

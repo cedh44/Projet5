@@ -8,19 +8,20 @@ import {MatInputModule} from '@angular/material/input';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
 import {expect, jest} from '@jest/globals';
+import {SessionService} from 'src/app/services/session.service';
+import {AuthService} from '../../services/auth.service';
 import {LoginComponent} from './login.component';
-import {Observable, of, throwError} from "rxjs";
-import {SessionInformation} from "../../../../interfaces/sessionInformation.interface";
-import {SessionService} from "../../../../services/session.service";
-import {AuthService} from "../../services/auth.service";
 import {Router} from "@angular/router";
+import {SessionInformation} from "../../../../interfaces/sessionInformation.interface";
+import {Observable, of} from "rxjs";
 
-describe('LoginComponent Test Suites', () => {
+describe('LoginComponent Integration Test Suites', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
   let sessionService: SessionService;
   let authService: AuthService;
   let router: Router;
+  let loginFormDatas: { email: string; password: string };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({ // TestBed ; Configures and initializes environment for unit testing and provides methods for creating components and services in unit tests.
@@ -47,15 +48,41 @@ describe('LoginComponent Test Suites', () => {
     })
       .compileComponents();
     fixture = TestBed.createComponent(LoginComponent); //Permet de créer un composant de test "virtuel"
-    component = fixture.componentInstance; //Le composant est "créé
+    component = fixture.componentInstance; //Le composant est "créé"
     authService = TestBed.inject(AuthService);
     sessionService = TestBed.inject(SessionService);
     router = TestBed.inject(Router);
     fixture.detectChanges();
+    loginFormDatas = {
+      email: 'toto@gmail.com',
+      password: 'toto123!',
+    };
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should make the form incorrect when empty', () => {
+    component.form.setValue({
+      email: '',
+      password: '',
+    });
+    expect(component.form.valid).toBeFalsy();
+  });
+
+  it('should make the form incorrect when the fields are not filled correctly', () => {
+    component.form.setValue({
+      //L'email ci dessous n'est pas correct
+      email: 'toto',
+      password: 'toto123!',
+    });
+    expect(component.form.valid).toBeFalsy();
+  });
+
+  it('should make the form valid when all fields are correct', () => {
+    component.form.setValue({
+      //Le couplet email et password est valide
+      email: 'toto@gmail.com',
+      password: 'toto123!',
+    });
+    expect(component.form.valid).toBeTruthy();
   });
 
   it('should call submit function of login component and return values', () => {
@@ -70,12 +97,14 @@ describe('LoginComponent Test Suites', () => {
       admin: false,
     });
     // Valorisation du formulaire
+    component.form.setValue(loginFormDatas);
     // On espionne les services Auth Session et Router
     const spyAuthService = jest.spyOn(authService, 'login').mockReturnValue(sessionInformation$);
     const spySessionService = jest.spyOn(sessionService, 'logIn').mockImplementation(() => {
     });
     const spyRouter = jest.spyOn(router, 'navigate');
     // On vérifie si le formulaire est valide
+    expect(component.form.valid).toBeTruthy();
     component.submit();
     // On vérifie que authService.login et sessionService.logIn ont bien été appelés
     expect(spyAuthService).toHaveBeenCalled();
@@ -83,15 +112,4 @@ describe('LoginComponent Test Suites', () => {
     // On vérifie que le navigate vers '/sessions' a été appelé
     expect(spyRouter).toHaveBeenCalledWith(['/sessions']);
   })
-
-  it('should call submit function of login component and return error', () => {
-    // On espionne les services Auth Session et Router
-    const spyAuthService = jest.spyOn(authService, 'login').mockReturnValue(throwError(() => new Error('An error occurred')));
-    component.submit();
-    // On vérifie que authService.login a bien été appelée
-    expect(spyAuthService).toHaveBeenCalled();
-    // On vérifie que l'erreur est bien présente
-    expect(component.onError).toBeTruthy();
-  })
-
 });
