@@ -55,6 +55,38 @@ describe('RegisterComponent Test Suites', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should make the form incorrect when empty', () => {
+    component.form.setValue({
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+    });
+    expect(component.form.valid).toBeFalsy();
+  });
+
+  it('should make the form incorrect when email is not filled correctly', () => {
+    component.form.setValue({
+      //L'email ci dessous n'est pas correct
+      firstName: 'toto',
+      lastName: 'titi',
+      email: 'toto',
+      password: 'toto123!',
+    });
+    expect(component.form.valid).toBeFalsy();
+  });
+
+  it('should make the form valid when all fields are correct', () => {
+    component.form.setValue({
+      //Les données saisies sont valides
+      firstName: 'toto',
+      lastName: 'titi',
+      email: 'toto@gmail.com',
+      password: 'toto123!',
+    });
+    expect(component.form.valid).toBeTruthy();
+  });
+
   it('should call submit function of register component with no error', () => {
     // On espionne les services Auth et Router
     const spyAuthService = jest.spyOn(authService, 'register').mockReturnValue(of(void 0));
@@ -71,7 +103,6 @@ describe('RegisterComponent Test Suites', () => {
     component.submit();
     //On s'attend à ce que le services Auth soit appelé et que onError soit à true
     expect(spyAuthService).toHaveBeenCalled();
-    expect(component.onError).toBeTruthy();
   })
 
 });

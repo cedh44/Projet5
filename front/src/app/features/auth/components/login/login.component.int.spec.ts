@@ -13,7 +13,7 @@ import {AuthService} from '../../services/auth.service';
 import {LoginComponent} from './login.component';
 import {Router} from "@angular/router";
 import {SessionInformation} from "../../../../interfaces/sessionInformation.interface";
-import {Observable, of} from "rxjs";
+import {Observable, of, throwError} from "rxjs";
 
 describe('LoginComponent Integration Test Suites', () => {
   let component: LoginComponent;
@@ -21,7 +21,6 @@ describe('LoginComponent Integration Test Suites', () => {
   let sessionService: SessionService;
   let authService: AuthService;
   let router: Router;
-  let loginFormDatas: { email: string; password: string };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({ // TestBed ; Configures and initializes environment for unit testing and provides methods for creating components and services in unit tests.
@@ -53,39 +52,9 @@ describe('LoginComponent Integration Test Suites', () => {
     sessionService = TestBed.inject(SessionService);
     router = TestBed.inject(Router);
     fixture.detectChanges();
-    loginFormDatas = {
-      email: 'toto@gmail.com',
-      password: 'toto123!',
-    };
   });
 
-  it('should make the form incorrect when empty', () => {
-    component.form.setValue({
-      email: '',
-      password: '',
-    });
-    expect(component.form.valid).toBeFalsy();
-  });
-
-  it('should make the form incorrect when the fields are not filled correctly', () => {
-    component.form.setValue({
-      //L'email ci dessous n'est pas correct
-      email: 'toto',
-      password: 'toto123!',
-    });
-    expect(component.form.valid).toBeFalsy();
-  });
-
-  it('should make the form valid when all fields are correct', () => {
-    component.form.setValue({
-      //Le couplet email et password est valide
-      email: 'toto@gmail.com',
-      password: 'toto123!',
-    });
-    expect(component.form.valid).toBeTruthy();
-  });
-
-  it('should call submit function of login component and return values', () => {
+  it('should call submit function of login component OK and return values', () => {
     // Création d'un observable de type SessionInformation
     const sessionInformation$: Observable<SessionInformation> = of({
       token: 'bearer token',
@@ -97,7 +66,10 @@ describe('LoginComponent Integration Test Suites', () => {
       admin: false,
     });
     // Valorisation du formulaire
-    component.form.setValue(loginFormDatas);
+    component.form.setValue({
+      email: 'toto@gmail.com',
+      password: 'toto123!',
+    });
     // On espionne les services Auth Session et Router
     const spyAuthService = jest.spyOn(authService, 'login').mockReturnValue(sessionInformation$);
     const spySessionService = jest.spyOn(sessionService, 'logIn').mockImplementation(() => {
@@ -111,5 +83,24 @@ describe('LoginComponent Integration Test Suites', () => {
     expect(spySessionService).toHaveBeenCalled();
     // On vérifie que le navigate vers '/sessions' a été appelé
     expect(spyRouter).toHaveBeenCalledWith(['/sessions']);
+    expect(component.onError).toBeFalsy();
   })
+
+  it('should call submit function of login component with email unregisterd and return error', () => {
+    // Valorisation du formulaire
+    component.form.setValue({
+      email: 'emailInexistantEnBase@gmail.com',
+      password: 'toto123!',
+    });
+    // On espionne le service authService
+    const spyAuthService = jest.spyOn(authService, 'login').mockReturnValue(throwError(() => new Error('An error occurred')));
+    // On vérifie si le formulaire est valide
+    expect(component.form.valid).toBeTruthy();
+    component.submit();
+    // On vérifie que authService.login a bien été appelée
+    expect(spyAuthService).toHaveBeenCalled();
+    // On vérifie que l'erreur est bien présente
+    expect(component.onError).toBeTruthy();
+  })
+
 });

@@ -12,75 +12,10 @@ import {RouterTestingModule} from '@angular/router/testing';
 import {expect, jest} from '@jest/globals';
 import {SessionService} from 'src/app/services/session.service';
 import {SessionApiService} from '../../services/session-api.service';
-
 import {FormComponent} from './form.component';
 import {of} from "rxjs";
 import {Session} from "../../interfaces/session.interface";
 import {ActivatedRoute, convertToParamMap, Router} from "@angular/router";
-
-describe('FormComponent Test Suites When Init', () => {
-  let component: FormComponent;
-  let fixture: ComponentFixture<FormComponent>;
-  let router: Router;
-
-  const mockSessionService = {
-    sessionInformation: {
-      admin: false
-    }
-  }
-
-  class MockRouter {
-    get url(): string {
-      return '';
-    }
-
-    navigate(): Promise<boolean> {
-      return new Promise<boolean>((resolve, _) => resolve(true));
-    }
-  }
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [FormComponent],
-      imports: [
-        RouterTestingModule,
-        HttpClientModule,
-        MatCardModule,
-        MatIconModule,
-        MatFormFieldModule,
-        MatInputModule,
-        ReactiveFormsModule,
-        MatSnackBarModule,
-        MatSelectModule,
-        BrowserAnimationsModule
-      ],
-      providers: [
-        {provide: Router, useClass: MockRouter},
-        {provide: SessionService, useValue: mockSessionService},
-        {provide: ActivatedRoute, useValue: {snapshot: {paramMap: convertToParamMap({id: '1'})}},},
-      ]
-    })
-      .compileComponents();
-
-    fixture = TestBed.createComponent(FormComponent);
-    component = fixture.componentInstance;
-    router = TestBed.inject(Router);
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should init component when not update', () => {
-    component.ngOnInit();
-    // On vérifie que les données du formulaire sont bien initialisées
-    expect(component.sessionForm?.get('name')?.value).toEqual('');
-    expect(component.sessionForm?.get('date')?.value).toEqual('');
-    expect(component.sessionForm?.get('teacher_id')?.value).toEqual('');
-    expect(component.sessionForm?.get('description')?.value).toEqual('');
-  })
-});
 
 describe('FormComponent Test Suites When Update', () => {
   let component: FormComponent;

@@ -58,6 +58,32 @@ describe('LoginComponent Test Suites', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should make the form incorrect when empty', () => {
+    component.form.setValue({
+      email: '',
+      password: '',
+    });
+    expect(component.form.valid).toBeFalsy();
+  });
+
+  it('should make the form incorrect when the fields are not filled correctly', () => {
+    component.form.setValue({
+      //L'email ci dessous n'est pas correct
+      email: 'toto',
+      password: 'toto123!',
+    });
+    expect(component.form.valid).toBeFalsy();
+  });
+
+  it('should make the form valid when all fields are correct', () => {
+    component.form.setValue({
+      //Le couplet email et password est valide
+      email: 'toto@gmail.com',
+      password: 'toto123!',
+    });
+    expect(component.form.valid).toBeTruthy();
+  });
+
   it('should call submit function of login component and return values', () => {
     // Création d'un observable de type SessionInformation
     const sessionInformation$: Observable<SessionInformation> = of({
@@ -85,13 +111,11 @@ describe('LoginComponent Test Suites', () => {
   })
 
   it('should call submit function of login component and return error', () => {
-    // On espionne les services Auth Session et Router
+    // On espionne le service authService
     const spyAuthService = jest.spyOn(authService, 'login').mockReturnValue(throwError(() => new Error('An error occurred')));
     component.submit();
     // On vérifie que authService.login a bien été appelée
     expect(spyAuthService).toHaveBeenCalled();
-    // On vérifie que l'erreur est bien présente
-    expect(component.onError).toBeTruthy();
   })
 
 });

@@ -67,38 +67,6 @@ describe('RegisterComponent Integration Test Suites', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should make the form incorrect when empty', () => {
-    component.form.setValue({
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-    });
-    expect(component.form.valid).toBeFalsy();
-  });
-
-  it('should make the form incorrect when email is not filled correctly', () => {
-    component.form.setValue({
-      //L'email ci dessous n'est pas correct
-      firstName: 'toto',
-      lastName: 'titi',
-      email: 'toto',
-      password: 'toto123!',
-    });
-    expect(component.form.valid).toBeFalsy();
-  });
-
-  it('should make the form valid when all fields are correct', () => {
-    component.form.setValue({
-      //Les données saisies sont valides
-      firstName: 'toto',
-      lastName: 'titi',
-      email: 'toto@gmail.com',
-      password: 'toto123!',
-    });
-    expect(component.form.valid).toBeTruthy();
-  });
-
   it('should call submit function of register component with no error', () => {
     // Valorisation du formulaire
     component.form.setValue(registerFormDatas);
@@ -113,9 +81,18 @@ describe('RegisterComponent Integration Test Suites', () => {
     expect(spyRouter).toHaveBeenCalledWith(['/login']);
   })
 
-  it('should call submit function of register component with  error', () => {
-    // On espionne le services Auth
+  it('should call submit function of register component with error (email already registered)', () => {
+    // Valorisation du formulaire
+    component.form.setValue({
+      firstName: 'toto',
+      lastName: 'titi',
+      email: 'emailDejaEexistantEnBase@gmail.com',
+      password: 'toto123!'
+    });
+    // On espionne le service authService
     const spyAuthService = jest.spyOn(authService, 'register').mockReturnValue(throwError(() => new Error('An error occurred')));
+    //On vérifie si le formulaire est valide
+    expect(component.form.valid).toBeTruthy();
     component.submit();
     //On s'attend à ce que le services Auth soit appelé et que onError soit à true
     expect(spyAuthService).toHaveBeenCalled();
