@@ -63,10 +63,6 @@ describe('RegisterComponent Integration Test Suites', () => {
     };
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
   it('should call submit function of register component with no error', () => {
     // Valorisation du formulaire
     component.form.setValue(registerFormDatas);

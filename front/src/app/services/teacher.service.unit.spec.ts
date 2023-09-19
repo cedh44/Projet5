@@ -29,8 +29,20 @@ describe('TeacherService Test Suites', () => {
   it('should get all teachers', () => {
       const expectedTeachers: Teacher[] =
         [
-          {id: 1, lastName: 'tutu', firstName: 'tutu', createdAt: new Date(), updatedAt: new Date()},
-          {id: 2, lastName: 'tyty', firstName: 'tyty', createdAt: new Date(), updatedAt: new Date()}
+          {
+            id: 1,
+            lastName: 'tutu',
+            firstName: 'tutu',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          },
+          {
+            id: 2,
+            lastName: 'tyty',
+            firstName: 'tyty',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
         ];
 
       teacherService.all().subscribe(
@@ -50,8 +62,13 @@ describe('TeacherService Test Suites', () => {
   it('should get the details of a teacher by Id', () => {
       const mockIdTeacher: string = '1';
       const expectedTeacher: Teacher =
-        {id: 1, lastName: 'tutu', firstName: 'tutu', createdAt: new Date(), updatedAt: new Date()}
-
+        {
+          id: 1,
+          lastName: 'tutu',
+          firstName: 'tutu',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
       teacherService.detail(mockIdTeacher).subscribe(
         teachersReturned => expect(teachersReturned).toEqual(expectedTeacher)
       );

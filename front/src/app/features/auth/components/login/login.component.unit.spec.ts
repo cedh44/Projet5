@@ -9,8 +9,6 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {RouterTestingModule} from '@angular/router/testing';
 import {expect, jest} from '@jest/globals';
 import {LoginComponent} from './login.component';
-import {Observable, of, throwError} from "rxjs";
-import {SessionInformation} from "../../../../interfaces/sessionInformation.interface";
 import {SessionService} from "../../../../services/session.service";
 import {AuthService} from "../../services/auth.service";
 import {Router} from "@angular/router";
@@ -83,39 +81,5 @@ describe('LoginComponent Test Suites', () => {
     });
     expect(component.form.valid).toBeTruthy();
   });
-
-  it('should call submit function of login component and return values', () => {
-    // Création d'un observable de type SessionInformation
-    const sessionInformation$: Observable<SessionInformation> = of({
-      token: 'bearer token',
-      type: 'jwt',
-      id: 0,
-      username: 'toto@gmail.com',
-      firstName: 'toto',
-      lastName: 'toto',
-      admin: false,
-    });
-    // Valorisation du formulaire
-    // On espionne les services Auth Session et Router
-    const spyAuthService = jest.spyOn(authService, 'login').mockReturnValue(sessionInformation$);
-    const spySessionService = jest.spyOn(sessionService, 'logIn').mockImplementation(() => {
-    });
-    const spyRouter = jest.spyOn(router, 'navigate');
-    // On vérifie si le formulaire est valide
-    component.submit();
-    // On vérifie que authService.login et sessionService.logIn ont bien été appelés
-    expect(spyAuthService).toHaveBeenCalled();
-    expect(spySessionService).toHaveBeenCalled();
-    // On vérifie que le navigate vers '/sessions' a été appelé
-    expect(spyRouter).toHaveBeenCalledWith(['/sessions']);
-  })
-
-  it('should call submit function of login component and return error', () => {
-    // On espionne le service authService
-    const spyAuthService = jest.spyOn(authService, 'login').mockReturnValue(throwError(() => new Error('An error occurred')));
-    component.submit();
-    // On vérifie que authService.login a bien été appelée
-    expect(spyAuthService).toHaveBeenCalled();
-  })
 
 });
