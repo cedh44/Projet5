@@ -1,7 +1,8 @@
 import './support/commands'
 
 describe('Login spec', () => {
-  it('Login successfull', () => {
+  it('should login successfully', () => {
     cy.loginAdmin()
+    
   })
 });

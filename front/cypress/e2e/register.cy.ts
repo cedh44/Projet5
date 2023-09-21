@@ -1,7 +1,7 @@
 import './support/commands'
 
 describe('Register spec', () => {
-  it('Register successfull and then login successfull', () => {
+  it('should register successfully and then login successfully', () => {
     cy.visit('/register')
 
     cy.intercept('POST', '/api/auth/register', {
