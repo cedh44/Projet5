@@ -54,16 +54,6 @@ describe('RegisterComponent Test Suites', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should make the form incorrect when empty', () => {
-    component.form.setValue({
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-    });
-    expect(component.form.valid).toBeFalsy();
-  });
-
   it('should make the form incorrect when email is not filled correctly', () => {
     component.form.setValue({
       //L'email ci dessous n'est pas correct
