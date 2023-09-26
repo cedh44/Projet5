@@ -1,4 +1,4 @@
-import './support/commands'
+import '../support/commands.ts'
 
 describe('Login Logout spec', () => {
 
@@ -29,8 +29,6 @@ describe('Login Logout spec', () => {
     cy.url().should('include', '')
   })
 });
-
-import './support/commands'
 
 describe('Register spec', () => {
 
