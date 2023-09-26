@@ -61,7 +61,7 @@ describe('Register spec', () => {
         method: 'GET',
         url: '/api/session',
       },
-      []).as('session')
+      [])
 
     cy.get('input[formControlName=firstName]').type("toto")
     cy.get('input[formControlName=lastName]').type("titi")
@@ -367,6 +367,13 @@ describe('Me spec (Register)', () => {
       cy.intercept('DELETE', '/api/session/1', {
         statusCode: 200
       })
+
+      cy.intercept(
+        {
+          method: 'GET',
+          url: '/api/session',
+        },
+        [])
   
       //Clic sur Delete
       cy.contains('span.ml1', 'Delete').click()
