@@ -15,11 +15,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.openclassrooms.starterjwt.models.Teacher;
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+public class UserServiceUnitTest {
     @Mock
     private UserRepository userRepository;
 
@@ -38,7 +37,7 @@ public class UserServiceTest {
         @Test
     @DisplayName("Récupérer un user par son Id (1)")
     public void testFindById() {
-        //ARRANGE : un user et mock de userRepository
+        //ARRANGE : on créé un user et mock de userRepository
         User user1 = new User((long)1, "toto@gmail.com", "toto", "titi", "password", false, LocalDateTime.parse("2023-08-29T00:00:00"), LocalDateTime.parse("2023-08-29T00:00:00"));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
 

@@ -21,7 +21,7 @@ import com.openclassrooms.starterjwt.models.Teacher;
 import com.openclassrooms.starterjwt.repository.TeacherRepository;
 
 @ExtendWith(MockitoExtension.class)
-public class TeacherServiceTest {
+public class TeacherServiceUnitTest {
 
     @Mock
     private TeacherRepository teacherRepository;
@@ -42,7 +42,6 @@ public class TeacherServiceTest {
         List<Teacher> result = teacherService.findAll();
 
         //ASSERT : on s'attend à retrouver les même objets et on vérifie que teacherRepository a été appelé
-        //TODO regarder pour les messages à remplir
         assertEquals(teachersList.get(0), result.get(0));
         assertEquals(teachersList.get(1), result.get(1));
         verify(teacherRepository, times(1)).findAll();
