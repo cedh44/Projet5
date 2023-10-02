@@ -1,6 +1,7 @@
 package com.openclassrooms.starterjwt.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -19,12 +20,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.payload.request.LoginRequest;
+import com.openclassrooms.starterjwt.payload.request.SignupRequest;
 import com.openclassrooms.starterjwt.payload.response.JwtResponse;
+import com.openclassrooms.starterjwt.payload.response.MessageResponse;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import com.openclassrooms.starterjwt.security.jwt.JwtUtils;
 import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
-
-import antlr.Token;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthControllerUnitTest {
@@ -42,11 +43,11 @@ public class AuthControllerUnitTest {
 
     @Test
     @DisplayName("Test authenticate user OK")
-    public void testauthenticateUserOK() {
+    public void testAuthenticateUserOK() {
         // ARRANGE
         Long id = 1L;
         String email = "yoga@studio.com";
-        String password = "test1234!";
+        String password = "test!1234";
         String firstname = "Admin";
         String lastname = "Admin";
         boolean isAdmin = true;
@@ -84,13 +85,63 @@ public class AuthControllerUnitTest {
         JwtResponse jwtResponse = (JwtResponse) responseEntity.getBody();
 
         // ASSERT
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
-        assertEquals(jwtResponse.getToken(), jwt);
-        assertEquals(jwtResponse.getId(), id);
-        assertEquals(jwtResponse.getUsername(), email);
-        assertEquals(jwtResponse.getFirstName(), firstname);
-        assertEquals(jwtResponse.getLastName(), lastname);
-        assertEquals(jwtResponse.getAdmin(), isAdmin);
+        // on s'attend à un status OK en retour et les champs suivant identiques en
+        // retour
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(jwt, jwtResponse != null ? jwtResponse.getToken() : null);
+        assertEquals(id, jwtResponse != null ? jwtResponse.getId() : null);
+        assertEquals(email, jwtResponse != null ? jwtResponse.getUsername() : null);
+        assertEquals(firstname, jwtResponse != null ? jwtResponse.getFirstName() : null);
+        assertEquals(lastname, jwtResponse != null ? jwtResponse.getLastName() : null);
+        assertEquals(isAdmin, jwtResponse != null ? jwtResponse.getAdmin() : null);
+    }
+
+    @Test
+    @DisplayName("Test register user succesfully")
+    public void testRegisterUserSuccesfully() {
+        // ARRANGE
+        String email = "toto@gmail.com";
+        String password = "toto123!";
+        String lastName = "toto";
+        String firstName = "titi";
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setEmail(email);
+        signupRequest.setPassword(password);
+        signupRequest.setLastName(lastName);
+        signupRequest.setFirstName(firstName);
+
+        // On mock userRepository et passwordEncoder
+        when(userRepository.existsByEmail(email)).thenReturn(false);
+        when(passwordEncoder.encode(password)).thenReturn("hashed");
+        when(userRepository.save(any(User.class))).thenReturn(new User());
+
+        // ACT
+        ResponseEntity<?> response = authController.registerUser(signupRequest);
+        MessageResponse messageResponse = (MessageResponse) response.getBody();
+
+        // ASSERT on s'attend à un status OK en retour  et le message succesfully
+        assertEquals("User registered successfully!", messageResponse != null ? messageResponse.getMessage() : null);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    @DisplayName("Test register email already taken")
+    public void testRegisterEmailAlreaydTaken() {
+        // ARRANGE
+        String email = "toto@gmail.com";
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setEmail(email);
+
+        // On mock userRepository et passwordEncoder
+        when(userRepository.existsByEmail(email)).thenReturn(true);
+
+        // ACT
+        ResponseEntity<?> response = authController.registerUser(signupRequest);
+        MessageResponse messageResponse = (MessageResponse) response.getBody();
+
+        // ASSERT on s'attend à un status BAD REQUEST en retour et le message d'erreur
+        assertEquals("Error: Email is already taken!", messageResponse != null ? messageResponse.getMessage() : null);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
 }

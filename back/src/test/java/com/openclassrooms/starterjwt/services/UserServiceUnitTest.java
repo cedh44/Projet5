@@ -27,7 +27,7 @@ public class UserServiceUnitTest {
 
     @Test
     @DisplayName("Supprimer un utilisateur (Delete)")
-    public void deleteTest() {
+    public void testDelete() {
         //ACT
         userService.delete(1L);
         //ASSERT : on vérifie que userRepository.deleteById a bien été appelé

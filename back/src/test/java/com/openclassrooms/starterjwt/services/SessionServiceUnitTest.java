@@ -48,7 +48,7 @@ public class SessionServiceUnitTest {
     private Teacher teacher; //beforeEach: créer un teacher
 
     @BeforeEach
-    public void createTeacherAndSessions() {
+    public void testCreateTeacherAndSessions() {
         this.teacher = new Teacher((long) 1, "DELAHAYE", "Margot", LocalDateTime.parse("2023-08-29T00:00:00"),
                 LocalDateTime.parse("2023-08-29T00:00:00"));
         this.session = new Session((long) 1, "Séance pour les débutants", new Date(),
@@ -66,7 +66,7 @@ public class SessionServiceUnitTest {
 
     @Test
     @DisplayName("Créer une session (Create)")
-    public void createTest() {
+    public void testCreate() {
         //ARRANGE : on créé une session et son teacher, et mock de sessionsRepository
         when(sessionRepository.save(session)).thenReturn(session);
 
@@ -81,7 +81,7 @@ public class SessionServiceUnitTest {
 
     @Test
     @DisplayName("Supprimer une session (Delete)")
-    public void deleteTest() {
+    public void testDelete() {
         //ARRANGE : cf beforeEach pour la création de la session id 1
         //ACT : delete la session 1
         sessionService.delete(1L);
