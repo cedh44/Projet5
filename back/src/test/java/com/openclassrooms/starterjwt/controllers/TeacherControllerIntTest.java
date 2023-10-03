@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -22,26 +23,29 @@ import com.jayway.jsonpath.JsonPath;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ActiveProfiles("test") // Profil test activé indique qu'on utilise la BDD embarquée définie dans
+                        // application-test.properties
 public class TeacherControllerIntTest {
         @Autowired
         MockMvc mockMvc;
 
         String token;
+        int id;
 
         @BeforeAll
-        //On récupère un token pour les appels suivants
+        // on récupère id et token depuis un login
         public void getValidToken() throws Exception {
-                String requestBodyAdmin = "{" +
-                                "    \"email\": \"yoga@studio.com\"," +
+                String requestBodyLoginUser = "{" +
+                                "    \"email\": \"toto@gmail.com\"," +
                                 "    \"password\": \"test!1234\"" +
                                 "}";
-                MvcResult result = mockMvc.perform(post("/api/auth/login")
+                MvcResult resultLogin = mockMvc.perform(post("/api/auth/login")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(requestBodyAdmin))
-                                .andExpect(status().isOk())
+                                .content(requestBodyLoginUser))
                                 .andReturn();
-
-                this.token = "Bearer " + JsonPath.read(result.getResponse().getContentAsString(), "$.token");
+                this.token = "Bearer "
+                                + JsonPath.read(resultLogin.getResponse().getContentAsString(), "$.token");
+                this.id = JsonPath.read(resultLogin.getResponse().getContentAsString(), "$.id");
         }
 
         @Test
@@ -51,13 +55,12 @@ public class TeacherControllerIntTest {
                                 .header("Authorization", this.token))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("lastName", is("DELAHAYE")));
-
         }
 
         @Test
         @DisplayName("Test find teacher by Id Not Found")
         public void testFindTeacherByIdNotFound() throws Exception {
-                mockMvc.perform(get("/api/teacher/99")
+                mockMvc.perform(get("/api/teacher/999")
                                 .header("Authorization", this.token))
                                 .andExpect(status().isNotFound());
         }

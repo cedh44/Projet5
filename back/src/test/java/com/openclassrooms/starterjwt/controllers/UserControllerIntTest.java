@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -24,6 +24,7 @@ import com.jayway.jsonpath.JsonPath;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ActiveProfiles("test") //Profil test activé indique qu'on utilise la BDD embarquée définie dans application-test.properties
 public class UserControllerIntTest {
         @Autowired
         MockMvc mockMvc;
@@ -32,28 +33,19 @@ public class UserControllerIntTest {
         int id;
 
         @BeforeAll
-        public void registerUserAndLoginAndGetValidToken() throws Exception {
-                String requestBodyRegisterUser = "{" +
-                                "    \"lastName\": \"toto\"," +
-                                "    \"firstName\": \"titi\"," +
-                                "    \"email\": \"toto@gmail.com\"," +
-                                "    \"password\": \"test123!\"" +
-                                "}";
+        // on récupère id et token depuis un login
+        public void getValidToken() throws Exception {
                 String requestBodyLoginUser = "{" +
                                 "    \"email\": \"toto@gmail.com\"," +
-                                "    \"password\": \"test123!\"" +
+                                "    \"password\": \"test!1234\"" +
                                 "}";
-                mockMvc.perform(post("/api/auth/register")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(requestBodyRegisterUser))
-                                .andExpect(status().isOk());
-                MvcResult result = mockMvc.perform(post("/api/auth/login")
+                MvcResult resultLogin = mockMvc.perform(post("/api/auth/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBodyLoginUser))
-                                .andExpect(status().isOk())
                                 .andReturn();
-                this.token = "Bearer " + JsonPath.read(result.getResponse().getContentAsString(), "$.token");
-                this.id = JsonPath.read(result.getResponse().getContentAsString(), "$.id");
+                this.token = "Bearer "
+                                + JsonPath.read(resultLogin.getResponse().getContentAsString(), "$.token");
+                this.id = JsonPath.read(resultLogin.getResponse().getContentAsString(), "$.id");
         }
 
         @Test
@@ -68,7 +60,7 @@ public class UserControllerIntTest {
         @Test
         @DisplayName("Test findById et retourne Not Found")
         public void testUserFindByIdNotFound() throws Exception {
-                mockMvc.perform(get("/api/user/99")
+                mockMvc.perform(get("/api/user/99999")
                                 .header("Authorization", this.token))
                                 .andExpect(status().isNotFound());
         }
@@ -90,9 +82,17 @@ public class UserControllerIntTest {
         }
 
         @Test
+        @DisplayName("Test delete OK")
+        public void testDeleteUserOK() throws Exception {
+                mockMvc.perform(delete("/api/user/" + this.id)
+                                .header("Authorization", this.token))
+                                .andExpect(status().isOk());
+        }
+        
+        @Test
         @DisplayName("Test delete un user inexistant et retourne Not Found")
         public void testDeleteNotFound() throws Exception {
-                mockMvc.perform(delete("/api/user/99")
+                mockMvc.perform(delete("/api/user/99999")
                                 .header("Authorization", this.token))
                                 .andExpect(status().isNotFound());
         }
@@ -104,14 +104,4 @@ public class UserControllerIntTest {
                                 .header("Authorization", this.token))
                                 .andExpect(status().isBadRequest());
         }
-
-
-        @AfterAll
-        public void testDeleteUserOK() throws Exception {
-                // Supprimer le user en BDD
-                mockMvc.perform(delete("/api/user/" + this.id)
-                                .header("Authorization", this.token))
-                                .andExpect(status().isOk());
-        }
-
 }
