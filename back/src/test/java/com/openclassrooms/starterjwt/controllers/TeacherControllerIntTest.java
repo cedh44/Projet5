@@ -29,6 +29,7 @@ public class TeacherControllerIntTest {
         String token;
 
         @BeforeAll
+        //On récupère un token pour les appels suivants
         public void getValidToken() throws Exception {
                 String requestBodyAdmin = "{" +
                                 "    \"email\": \"yoga@studio.com\"," +
