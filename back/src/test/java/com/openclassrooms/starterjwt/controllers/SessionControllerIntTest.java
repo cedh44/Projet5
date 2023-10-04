@@ -58,18 +58,18 @@ public class SessionControllerIntTest {
         @DisplayName("Test create et retourne une session à chaque fois")
         public void testCreate() throws Exception {
                 String requestBodySession = "{" + //
-                                "    \"name\": \"Séance pour les enfants\"," +
+                                "    \"name\": \"Session pour les enfants\"," +
                                 "    \"date\": \"2012-01-01\"," +
                                 "    \"teacher_id\": 1," +
                                 "    \"users\": null," +
-                                "    \"description\": \"Séance pour les enfants\"" +
+                                "    \"description\": \"Session pour les enfants\"" +
                                 "}";
                 mockMvc.perform(post("/api/session")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", token)
                                 .content(requestBodySession))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("name", is("Séance pour les enfants")));
+                                .andExpect(jsonPath("name", is("Session pour les enfants")));
         }
 
         @Test
@@ -79,7 +79,7 @@ public class SessionControllerIntTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", token))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("name", is("Séance pour les débutants")));
+                                .andExpect(jsonPath("name", is("Session pour les nouveaux")));
         }
 
         @Test
@@ -104,26 +104,26 @@ public class SessionControllerIntTest {
                 mockMvc.perform(get("/api/session/")
                                 .header("Authorization", token))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$[0].name", is("Séance pour les débutants")))
-                                .andExpect(jsonPath("$[1].name", is("Séance avancée")));
+                                .andExpect(jsonPath("$[0].name", is("Session pour les nouveaux")))
+                                .andExpect(jsonPath("$[1].name", is("Session junior")));
         }
 
         @Test
         @DisplayName("Test update et retourne une session à jour")
         public void testUpdate() throws Exception {
                 String requestBodySessionUpdate = "{" +
-                                "    \"name\": \"Séance pour les pros UPDATED\"," +
+                                "    \"name\": \"Session pour les pros UPDATED\"," +
                                 "    \"date\": \"2023-12-01\"," +
                                 "    \"teacher_id\": 1," +
                                 "    \"users\": null," +
-                                "    \"description\": \"Séance pour les pros\"" +
+                                "    \"description\": \"Session pour les pros\"" +
                                 "}";
                 mockMvc.perform(put("/api/session/3")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header("Authorization", token)
                                 .content(requestBodySessionUpdate))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("name", is("Séance pour les pros UPDATED")));
+                                .andExpect(jsonPath("name", is("Session pour les pros UPDATED")));
         }
 
         @Test

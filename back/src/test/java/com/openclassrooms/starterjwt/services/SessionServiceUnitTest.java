@@ -48,14 +48,14 @@ public class SessionServiceUnitTest {
     public void testCreateTeacherAndSessions() {
         Teacher teacher = new Teacher((long) 1, "DELAHAYE", "Margot", LocalDateTime.parse("2023-08-29T00:00:00"),
                 LocalDateTime.parse("2023-08-29T00:00:00"));
-        this.session = new Session((long) 1, "Séance pour les débutants", new Date(),
-                "'Séance réservée aux débutants", teacher, new ArrayList<>(),
+        this.session = new Session((long) 1, "Session pour les nouveaux", new Date(),
+                "'Session réservée aux nouveaux", teacher, new ArrayList<>(),
                 LocalDateTime.parse("2023-10-07T00:00:00"),
                 LocalDateTime.parse("2023-10-07T00:00:00"));
         this.sessionList = new ArrayList<>();
         this.sessionList.add(session);
-        this.sessionList.add(new Session((long) 2, "Séance avancée", new Date(),
-                "'Séance réservée aux confirmés", teacher, new ArrayList<>(),
+        this.sessionList.add(new Session((long) 2, "Session avancée", new Date(),
+                "'Session réservée aux confirmés", teacher, new ArrayList<>(),
                 LocalDateTime.parse("2023-10-08T00:00:00"),
                 LocalDateTime.parse("2023-10-08T00:00:00")));
 

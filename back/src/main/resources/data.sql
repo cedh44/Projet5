@@ -9,7 +9,7 @@ VALUES  ('Admin', 'Admin', true, 'yoga@studio.com', '$2a$10$.Hsa/ZjUVaHqi0tp9xie
         ('tyty', 'tsts', false, 'tyty@gmail.com', '$2a$10$kH0s2azQ2roxXMD4mBNQ6eK/lr3snacu0fAjrRHuTGZOBuOsN1Mhe');
 
 INSERT INTO SESSIONS (name, description, teacher_id, date)
-VALUES  ('Séance pour les débutants', 'Séance pour les débutants', 1, '2023-12-01 01:00:00'),
-        ('Séance avancée', 'Séance pour les confirmés', 2, '2023-12-01 01:00:00'),
-        ('Séance pro', 'Séance pour les pros', 2, '2023-12-01 01:00:00'),
-        ('Séance libre', 'Séance libre', 2, '2023-12-01 01:00:00');
+VALUES  ('Session pour les nouveaux', 'Session pour les nouveaux', 1, '2023-12-01 01:00:00'),
+        ('Session junior', 'Session junior', 2, '2023-12-01 01:00:00'),
+        ('Session pro', 'session pour les pros', 2, '2023-12-01 01:00:00'),
+        ('Session libre', 'session libre', 2, '2023-12-01 01:00:00');

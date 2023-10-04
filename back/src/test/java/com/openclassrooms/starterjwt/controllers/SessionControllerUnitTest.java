@@ -37,9 +37,9 @@ public class SessionControllerUnitTest {
                 // sessionMapper
                 // pour le dto
                 Long id = 1L;
-                Session session = new Session(id, "Séance pour les débutants", null, null, null, null, null,
+                Session session = new Session(id, "Session pour les nouveaux", null, null, null, null, null,
                                 null);
-                SessionDto sessionDto = new SessionDto(id, "Séance pour les débutants", null, null, null, null,
+                SessionDto sessionDto = new SessionDto(id, "Session pour les nouveaux", null, null, null, null,
                                 null, null);
                 when(sessionService.getById(id)).thenReturn(session);
                 when(sessionMapper.toDto(session)).thenReturn(sessionDto);
@@ -86,15 +86,15 @@ public class SessionControllerUnitTest {
                 // ARRANGE : on prépare une liste de sessions, une liste de dtoSession et mock
                 // de sessionRepository et sessionMapper
                 List<Session> sessionsList = new ArrayList<>();
-                sessionsList.add(new Session((long) 1, "Séance pour les débutants", null, null, null, null, null,
+                sessionsList.add(new Session((long) 1, "Session pour les nouveaux", null, null, null, null, null,
                                 null));
-                sessionsList.add(new Session((long) 2, "Séance avancée", null, null, null, null, null,
+                sessionsList.add(new Session((long) 2, "Session avancée", null, null, null, null, null,
                                 null));
 
                 List<SessionDto> dtoSessionsList = new ArrayList<>();
-                dtoSessionsList.add(new SessionDto((long) 1, "Séance pour les débutants", null, null, null, null, null,
+                dtoSessionsList.add(new SessionDto((long) 1, "Session pour les nouveaux", null, null, null, null, null,
                                 null));
-                dtoSessionsList.add(new SessionDto((long) 2, "Séance avancée", null, null, null, null, null, null));
+                dtoSessionsList.add(new SessionDto((long) 2, "Session avancée", null, null, null, null, null, null));
 
                 when(sessionService.findAll()).thenReturn(sessionsList);
                 when(sessionMapper.toDto(sessionsList)).thenReturn(dtoSessionsList);
@@ -124,11 +124,11 @@ public class SessionControllerUnitTest {
                 // ARRANGE : on prépare une sessionDto à créer, une session créé, une sessionDto
                 // créée et mock de sessionService et sessionMapper pour le dto
                 Long id = 1L;
-                SessionDto sessionDtoToCreate = new SessionDto(id, "Séance pour les débutants", null, null, null, null,
+                SessionDto sessionDtoToCreate = new SessionDto(id, "Session pour les nouveaux", null, null, null, null,
                                 null, null);
-                Session sessionCreated = new Session(id, "Séance pour les débutants", null, null, null, null, null,
+                Session sessionCreated = new Session(id, "Session pour les nouveaux", null, null, null, null, null,
                                 null);
-                SessionDto sessionDtoCreated = new SessionDto(id, "Séance pour les débutants", null, null, null, null,
+                SessionDto sessionDtoCreated = new SessionDto(id, "Session pour les nouveaux", null, null, null, null,
                                 null, null);
                 when(sessionService.create(sessionMapper.toEntity(sessionDtoToCreate))).thenReturn(sessionCreated);
                 when(sessionMapper.toDto(sessionCreated)).thenReturn(sessionDtoCreated);
@@ -150,13 +150,13 @@ public class SessionControllerUnitTest {
                 // sessionDto
                 // à jour et mock de sessionService et sessionMapper pour le dto
                 Long id = 1L;
-                SessionDto sessionDtoToUpdate = new SessionDto(id, "Séance pour les débutants à jour", null, null, null,
+                SessionDto sessionDtoToUpdate = new SessionDto(id, "Session pour les nouveaux à jour", null, null, null,
                                 null,
                                 null, null);
-                Session sessionUpdated = new Session(id, "Séance pour les débutants à jour", null, null, null, null,
+                Session sessionUpdated = new Session(id, "Session pour les nouveaux à jour", null, null, null, null,
                                 null,
                                 null);
-                SessionDto sessionDtoUpdated = new SessionDto(id, "Séance pour les débutants à jour", null, null, null,
+                SessionDto sessionDtoUpdated = new SessionDto(id, "Session pour les nouveaux à jour", null, null, null,
                                 null,
                                 null, null);
                 when(sessionMapper.toEntity(sessionDtoToUpdate)).thenReturn(sessionUpdated);
@@ -189,7 +189,7 @@ public class SessionControllerUnitTest {
         public void testDelete() {
                 // ARRANGE : on prépare une session et mock de sessionService
                 Long id = 1L;
-                Session session = new Session(id, "Séance pour les débutants", null, null, null, null, null,
+                Session session = new Session(id, "Session pour les nouveaux", null, null, null, null, null,
                                 null);
                 when(sessionService.getById(id)).thenReturn(session);
                 doNothing().when(sessionService).delete(id);
