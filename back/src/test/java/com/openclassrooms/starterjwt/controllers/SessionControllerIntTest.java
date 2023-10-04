@@ -49,12 +49,12 @@ public class SessionControllerIntTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBodyLoginUser))
                                 .andReturn();
-                this.token = "Bearer "
+                token = "Bearer "
                                 + JsonPath.read(resultLogin.getResponse().getContentAsString(), "$.token");
-                this.id = JsonPath.read(resultLogin.getResponse().getContentAsString(), "$.id");
+                id = JsonPath.read(resultLogin.getResponse().getContentAsString(), "$.id");
         }
 
-        @BeforeAll
+        @Test
         @DisplayName("Test create et retourne une session à chaque fois")
         public void testCreate() throws Exception {
                 String requestBodySession = "{" + //
@@ -66,7 +66,7 @@ public class SessionControllerIntTest {
                                 "}";
                 mockMvc.perform(post("/api/session")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", this.token)
+                                .header("Authorization", token)
                                 .content(requestBodySession))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("name", is("Séance pour les enfants")));
@@ -77,7 +77,7 @@ public class SessionControllerIntTest {
         public void testSessionFindById() throws Exception {
                 mockMvc.perform(get("/api/session/1")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("name", is("Séance pour les débutants")));
         }
@@ -86,7 +86,7 @@ public class SessionControllerIntTest {
         @DisplayName("Test findById et retourne Not Found")
         public void testSessionFindByIdNotFound() throws Exception {
                 mockMvc.perform(get("/api/sesson/99999")
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isNotFound());
         }
 
@@ -94,7 +94,7 @@ public class SessionControllerIntTest {
         @DisplayName("Test findById et retourne bad request")
         public void testSessionFindByIdBadRequest() throws Exception {
                 mockMvc.perform(get("/api/session/toto")
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isBadRequest());
         }
 
@@ -102,7 +102,7 @@ public class SessionControllerIntTest {
         @DisplayName("Test findAll and retourne une liste de sessions")
         public void testSessionFindAll() throws Exception {
                 mockMvc.perform(get("/api/session/")
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$[0].name", is("Séance pour les débutants")))
                                 .andExpect(jsonPath("$[1].name", is("Séance avancée")));
@@ -112,18 +112,18 @@ public class SessionControllerIntTest {
         @DisplayName("Test update et retourne une session à jour")
         public void testUpdate() throws Exception {
                 String requestBodySessionUpdate = "{" +
-                                "    \"name\": \"Séance pour les débutants UPDATED\"," +
+                                "    \"name\": \"Séance pour les pros UPDATED\"," +
                                 "    \"date\": \"2023-12-01\"," +
                                 "    \"teacher_id\": 1," +
                                 "    \"users\": null," +
-                                "    \"description\": \"Séance pour les débutants\"" +
+                                "    \"description\": \"Séance pour les pros\"" +
                                 "}";
-                mockMvc.perform(put("/api/session/1")
+                mockMvc.perform(put("/api/session/3")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", this.token)
+                                .header("Authorization", token)
                                 .content(requestBodySessionUpdate))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("name", is("Séance pour les débutants UPDATED")));
+                                .andExpect(jsonPath("name", is("Séance pour les pros UPDATED")));
         }
 
         @Test
@@ -131,7 +131,7 @@ public class SessionControllerIntTest {
         public void testUpdateBadRequest() throws Exception {
                 mockMvc.perform(put("/api/session/toto")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", this.token)
+                                .header("Authorization", token)
                                 .content(""))
                                 .andExpect(status().isBadRequest());
         }
@@ -140,9 +140,9 @@ public class SessionControllerIntTest {
         @DisplayName("Test delete")
         public void testDelete() throws Exception {
                 // Créer une session
-                mockMvc.perform(delete("/api/session/2")
+                mockMvc.perform(delete("/api/session/4")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isOk());
         }
 
@@ -151,7 +151,7 @@ public class SessionControllerIntTest {
         public void testDeleteBadRequest() throws Exception {
                 mockMvc.perform(delete("/api/session/toto")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isBadRequest());
         }
 
@@ -160,7 +160,7 @@ public class SessionControllerIntTest {
         public void testDeleteNotFound() throws Exception {
                 mockMvc.perform(delete("/api/session/99999")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isNotFound());
         }
 
@@ -168,14 +168,14 @@ public class SessionControllerIntTest {
         @DisplayName("Test participate and no longer participate")
         public void testParticipateAndNoLongerParticipate() throws Exception {
                 // Participate
-                mockMvc.perform(post("/api/session/1/participate/" + this.id)
+                mockMvc.perform(post("/api/session/1/participate/" + id)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isOk());
-                mockMvc.perform(delete("/api/session/1/participate/" + this.id)
+                mockMvc.perform(delete("/api/session/1/participate/" + id)
                                 // No Longer Participate
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isOk());
         }
 
@@ -184,7 +184,7 @@ public class SessionControllerIntTest {
         public void testParticipateBadRequest() throws Exception {
                 mockMvc.perform(post("/api/session/toto/participate/tata")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isBadRequest());
         }
 
@@ -193,7 +193,7 @@ public class SessionControllerIntTest {
         public void testNoLongerParticipateBadRequest() throws Exception {
                 mockMvc.perform(delete("/api/session/toto/participate/tata")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isBadRequest());
         }
 }

@@ -24,13 +24,13 @@ import com.jayway.jsonpath.JsonPath;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ActiveProfiles("test") //Profil test activé indique qu'on utilise la BDD embarquée définie dans application-test.properties
+@ActiveProfiles("test") // Profil test activé indique qu'on utilise la BDD embarquée définie dans
+                        // application-test.properties
 public class UserControllerIntTest {
         @Autowired
         MockMvc mockMvc;
 
         String token;
-        int id;
 
         @BeforeAll
         // on récupère id et token depuis un login
@@ -43,16 +43,15 @@ public class UserControllerIntTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBodyLoginUser))
                                 .andReturn();
-                this.token = "Bearer "
+                token = "Bearer "
                                 + JsonPath.read(resultLogin.getResponse().getContentAsString(), "$.token");
-                this.id = JsonPath.read(resultLogin.getResponse().getContentAsString(), "$.id");
         }
 
         @Test
         @DisplayName("Test find user by Id")
         public void testFindUserById() throws Exception {
-                mockMvc.perform(get("/api/user/" + this.id)
-                                .header("Authorization", this.token))
+                mockMvc.perform(get("/api/user/2")
+                                .header("Authorization", token))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("lastName", is("toto")));
         }
@@ -61,7 +60,7 @@ public class UserControllerIntTest {
         @DisplayName("Test findById et retourne Not Found")
         public void testUserFindByIdNotFound() throws Exception {
                 mockMvc.perform(get("/api/user/99999")
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isNotFound());
         }
 
@@ -69,14 +68,14 @@ public class UserControllerIntTest {
         @DisplayName("Test findById et retourne Bad Request")
         public void testUserFindByIdBadRequest() throws Exception {
                 mockMvc.perform(get("/api/user/toto")
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isBadRequest());
         }
 
         @Test
         @DisplayName("Test findById et retourne Unauthorized")
         public void testUserFindByIdUnauthorized() throws Exception {
-                mockMvc.perform(get("/api/user/" + this.id)
+                mockMvc.perform(get("/api/user/1")
                                 .header("Authorization", "WrongToken"))
                                 .andExpect(status().isUnauthorized());
         }
@@ -84,11 +83,21 @@ public class UserControllerIntTest {
         @Test
         @DisplayName("Test delete OK")
         public void testDeleteUserOK() throws Exception {
-                mockMvc.perform(delete("/api/user/" + this.id)
-                                .header("Authorization", this.token))
+                String requestBodyLoginUser = "{" +
+                                "    \"email\": \"tyty@gmail.com\"," +
+                                "    \"password\": \"test!1234\"" +
+                                "}";
+                MvcResult resultLogin = mockMvc.perform(post("/api/auth/login")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(requestBodyLoginUser))
+                                .andReturn();
+                String tokenForUserToDelete = "Bearer "
+                                + JsonPath.read(resultLogin.getResponse().getContentAsString(), "$.token");
+                mockMvc.perform(delete("/api/user/3")
+                                .header("Authorization", tokenForUserToDelete))
                                 .andExpect(status().isOk());
         }
-        
+
         @Test
         @DisplayName("Test delete un user inexistant et retourne Not Found")
         public void testDeleteNotFound() throws Exception {

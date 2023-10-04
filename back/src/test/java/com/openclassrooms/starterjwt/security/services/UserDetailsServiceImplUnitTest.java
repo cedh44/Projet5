@@ -9,25 +9,20 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class UserDetailsServiceImplUnitTest {
 
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private UserDetailsService userDetailsService;
 
     @InjectMocks
     private UserDetailsServiceImpl userDetailsServiceImpl;
@@ -51,8 +46,11 @@ public class UserDetailsServiceImplUnitTest {
 
     @Test
     public void testLoadByUsernameNotFound() {
+        // ARRANGE : un userName inconnu  et mock de userRepository qui ne retourne rien
         String userName = "unknownUserName";
-        when(userRepository.findByEmail(userName)).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findByEmail(userName)).thenReturn(Optional.empty());
+        
+        // ASSERT : exception de type UsernameNotFoundException levée
         assertThrows(UsernameNotFoundException.class, () -> userDetailsServiceImpl.loadUserByUsername(userName));
     }
 }

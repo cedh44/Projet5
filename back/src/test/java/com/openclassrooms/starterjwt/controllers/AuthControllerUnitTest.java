@@ -8,10 +8,9 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +26,7 @@ import com.openclassrooms.starterjwt.repository.UserRepository;
 import com.openclassrooms.starterjwt.security.jwt.JwtUtils;
 import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class AuthControllerUnitTest {
 
     @Mock
@@ -119,7 +118,7 @@ public class AuthControllerUnitTest {
         ResponseEntity<?> response = authController.registerUser(signupRequest);
         MessageResponse messageResponse = (MessageResponse) response.getBody();
 
-        // ASSERT on s'attend à un status OK en retour  et le message succesfully
+        // ASSERT on s'attend à un status OK en retour et le message succesfully
         assertEquals("User registered successfully!", messageResponse != null ? messageResponse.getMessage() : null);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }

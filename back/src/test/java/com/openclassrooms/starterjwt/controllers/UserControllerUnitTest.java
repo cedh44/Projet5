@@ -8,10 +8,9 @@ import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,15 +24,13 @@ import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
 import com.openclassrooms.starterjwt.services.UserService;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class UserControllerUnitTest {
 
         @Mock
         private UserMapper userMapper;
         @Mock
         private UserService userService;
-        @Mock
-        private UserDto userDto;
         @Mock
         private SecurityContext securityContext;
         @InjectMocks // Créé une instance de la classe et injecte les mocks ci dessus
@@ -42,7 +39,8 @@ public class UserControllerUnitTest {
         @Test
         @DisplayName("Test findById et retourne un user")
         public void testUserFindById() {
-                // ARRANGE : on prépare un user, un user Dto et mock de userService et userMapper
+                // ARRANGE : on prépare un user, un user Dto et mock de userService et
+                // userMapper
                 // pour le dto
                 Long id = 1L;
                 User user = new User(id, "toto@gmail.com", "toto", "titi", "password", false,

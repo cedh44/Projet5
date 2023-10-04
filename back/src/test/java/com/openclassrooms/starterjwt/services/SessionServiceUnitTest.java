@@ -17,10 +17,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.openclassrooms.starterjwt.exception.BadRequestException;
 import com.openclassrooms.starterjwt.exception.NotFoundException;
@@ -30,35 +29,33 @@ import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.SessionRepository;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 public class SessionServiceUnitTest {
-    @Mock //Créé un mock
+    @Mock // Créé un mock
     private SessionRepository sessionRepository;
 
     @Mock
     private UserRepository userRepository;
 
-    @InjectMocks //Créé une instance de la classe et injecte les mocks ci dessus
+    @InjectMocks // Créé une instance de la classe et injecte les mocks ci dessus
     private SessionService sessionService;
 
-    private List<Session> sessionList; //beforeEach: créer une liste de session
+    private List<Session> sessionList; // beforeEach: créer une liste de session
 
-    private Session session; //beforeEach: créer une session
-
-    private Teacher teacher; //beforeEach: créer un teacher
+    private Session session; // beforeEach: créer une session
 
     @BeforeEach
     public void testCreateTeacherAndSessions() {
-        this.teacher = new Teacher((long) 1, "DELAHAYE", "Margot", LocalDateTime.parse("2023-08-29T00:00:00"),
+        Teacher teacher = new Teacher((long) 1, "DELAHAYE", "Margot", LocalDateTime.parse("2023-08-29T00:00:00"),
                 LocalDateTime.parse("2023-08-29T00:00:00"));
         this.session = new Session((long) 1, "Séance pour les débutants", new Date(),
-                "'Séance réservée aux débutants", this.teacher, new ArrayList<>(),
+                "'Séance réservée aux débutants", teacher, new ArrayList<>(),
                 LocalDateTime.parse("2023-10-07T00:00:00"),
                 LocalDateTime.parse("2023-10-07T00:00:00"));
         this.sessionList = new ArrayList<>();
         this.sessionList.add(session);
         this.sessionList.add(new Session((long) 2, "Séance avancée", new Date(),
-                "'Séance réservée aux confirmés", this.teacher, new ArrayList<>(),
+                "'Séance réservée aux confirmés", teacher, new ArrayList<>(),
                 LocalDateTime.parse("2023-10-08T00:00:00"),
                 LocalDateTime.parse("2023-10-08T00:00:00")));
 
@@ -82,10 +79,10 @@ public class SessionServiceUnitTest {
     @Test
     @DisplayName("Supprimer une session (Delete)")
     public void testDelete() {
-        //ARRANGE : cf beforeEach pour la création de la session id 1
-        //ACT : delete la session 1
+        // ARRANGE : cf beforeEach pour la création de la session id 1
+        // ACT : delete la session 1
         sessionService.delete(1L);
-        //ASSERT : on vérifie que userRepository.deleteById a bien été appelé
+        // ASSERT : on vérifie que userRepository.deleteById a bien été appelé
         verify(sessionRepository, times(1)).deleteById(1L);
     }
 
@@ -138,7 +135,7 @@ public class SessionServiceUnitTest {
     @Test
     @DisplayName("Inscrire un user à une session (Participate)")
     public void testParticipate() {
-        //ARRANGE : une session sans user + un user qui va participer et mock de
+        // ARRANGE : une session sans user + un user qui va participer et mock de
         // sessionRepository et
         // userRepository
         User user1 = new User((long) 1, "toto@gmail.com", "toto", "titi", "password", false,
@@ -147,10 +144,10 @@ public class SessionServiceUnitTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
         when(sessionRepository.save(session)).thenReturn(session);
 
-        //ACT : appel à participate de sessionService avec les id de session et user
+        // ACT : appel à participate de sessionService avec les id de session et user
         sessionService.participate(1L, 1L);
 
-        //ASSERT : on s'attend à avoir le user dans la session et à ce que les
+        // ASSERT : on s'attend à avoir le user dans la session et à ce que les
         // repository soient appelés
         verify(sessionRepository, times(1)).save(session);
         verify(sessionRepository, times(1)).findById(1L);
@@ -161,17 +158,17 @@ public class SessionServiceUnitTest {
     @Test
     @DisplayName("Désinscrire un user à une session (NoLongerParticipate)")
     public void testNoLongerParticipate() {
-        //ARRANGE : une session avec user et mock de sessionRepository
+        // ARRANGE : une session avec user et mock de sessionRepository
         User user1 = new User((long) 1, "toto@gmail.com", "toto", "titi", "password", false,
                 LocalDateTime.parse("2023-08-29T00:00:00"), LocalDateTime.parse("2023-08-29T00:00:00"));
         session.getUsers().add(0, user1);
         when(sessionRepository.findById(1L)).thenReturn(Optional.of(session));
         when(sessionRepository.save(session)).thenReturn(session);
 
-        //ACT : appel à participate de sessionService avec les id de session et user
+        // ACT : appel à participate de sessionService avec les id de session et user
         sessionService.noLongerParticipate(1L, 1L);
 
-        //ASSERT : on s'attend à avoir le user dans la session et à ce que les
+        // ASSERT : on s'attend à avoir le user dans la session et à ce que les
         // repository soient appelés
         verify(sessionRepository, times(1)).save(session);
         verify(sessionRepository, times(1)).findById(1L);
@@ -203,14 +200,14 @@ public class SessionServiceUnitTest {
     @Test
     @DisplayName("Inscrire un user à une session où il est déjà inscrit")
     public void testAlreadyParticipate() {
-        //ARRANGE : une session avec user et on veut l'inscrire
+        // ARRANGE : une session avec user et on veut l'inscrire
         User user1 = new User((long) 1, "toto@gmail.com", "toto", "titi", "password", false,
                 LocalDateTime.parse("2023-08-29T00:00:00"), LocalDateTime.parse("2023-08-29T00:00:00"));
         session.getUsers().add(0, user1);
         when(sessionRepository.findById(1L)).thenReturn(Optional.of(session));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
 
-        //ASSERT : on s'attend à une exception levée de type NotFoundException lors de
+        // ASSERT : on s'attend à une exception levée de type NotFoundException lors de
         // l'appel à participate
         assertThrows(BadRequestException.class, () -> sessionService.participate(1L, 1L));
     }

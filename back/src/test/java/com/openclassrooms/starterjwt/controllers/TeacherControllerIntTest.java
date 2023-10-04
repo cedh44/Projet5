@@ -30,7 +30,6 @@ public class TeacherControllerIntTest {
         MockMvc mockMvc;
 
         String token;
-        int id;
 
         @BeforeAll
         // on récupère id et token depuis un login
@@ -43,16 +42,15 @@ public class TeacherControllerIntTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestBodyLoginUser))
                                 .andReturn();
-                this.token = "Bearer "
+                token = "Bearer "
                                 + JsonPath.read(resultLogin.getResponse().getContentAsString(), "$.token");
-                this.id = JsonPath.read(resultLogin.getResponse().getContentAsString(), "$.id");
         }
 
         @Test
         @DisplayName("Test find teacher by Id")
         public void testFindTeacherById() throws Exception {
                 mockMvc.perform(get("/api/teacher/1")
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("lastName", is("DELAHAYE")));
         }
@@ -61,7 +59,7 @@ public class TeacherControllerIntTest {
         @DisplayName("Test find teacher by Id Not Found")
         public void testFindTeacherByIdNotFound() throws Exception {
                 mockMvc.perform(get("/api/teacher/999")
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isNotFound());
         }
 
@@ -69,7 +67,7 @@ public class TeacherControllerIntTest {
         @DisplayName("Test find teacher by Id Bad Request")
         public void testFindTeacherByIdBadRequest() throws Exception {
                 mockMvc.perform(get("/api/teacher/toto")
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isBadRequest());
         }
 
@@ -77,7 +75,7 @@ public class TeacherControllerIntTest {
         @DisplayName("Test find all teachers")
         public void testFindAllTeachers() throws Exception {
                 mockMvc.perform(get("/api/teacher/")
-                                .header("Authorization", this.token))
+                                .header("Authorization", token))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$[0].id").value(1))
                                 .andExpect(jsonPath("$[0].lastName", is("DELAHAYE")))

@@ -19,7 +19,8 @@ import org.springframework.test.web.servlet.MvcResult;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ActiveProfiles("test") //Profil test activé indique qu'on utilise la BDD embarquée définie dans application-test.properties
+@ActiveProfiles("test") // Profil test activé indique qu'on utilise la BDD embarquée définie dans
+                        // application-test.properties
 public class AuthControllerIntTest {
         // MockMVC crée une fausse version de votre application web, et lance les
         // méthodes qu’il comprend, afin que la fonctionnalité de votre application ne
@@ -27,28 +28,16 @@ public class AuthControllerIntTest {
         @Autowired
         MockMvc mockMvc;
 
-        String requestBodyAdmin = "{" +
-                        "    \"email\": \"yoga@studio.com\"," +
-                        "    \"password\": \"test!1234\"" +
-                        "}";
-        String requestBodyUser = "{" +
-                        "    \"email\": \"toto@gmail.com\"," +
-                        "    \"password\": \"test!1234\"" +
-                        "}";
-        String requestBodyRegisterUser = "{" +
-                        "    \"lastName\": \"tata\"," +
-                        "    \"firstName\": \"tutu\"," +
-                        "    \"email\": \"tutu@gmail.com\"," +
-                        "    \"password\": \"test!1234\"" +
-                        "}";
-
         @Test
         @DisplayName("Test authenticate user Admin OK")
         public void testAuthenticateUserAdmin() throws Exception {
-
+                String requestBodyAdmin = "{" +
+                                "    \"email\": \"yoga@studio.com\"," +
+                                "    \"password\": \"test!1234\"" +
+                                "}";
                 MvcResult result = mockMvc.perform(post("/api/auth/login") // Post vers /api/auth/login
                                 .contentType(MediaType.APPLICATION_JSON) // Contenu de type JSON
-                                .content(this.requestBodyAdmin)) // La requestBody déclarée plus haut
+                                .content(requestBodyAdmin)) // La requestBody déclarée plus haut
                                 .andExpect(status().isOk()) // ASSERT : On attend du OK en retour
                                 .andReturn();
                 // ASSERT : Dans la response, au niveau du Json , on attend "admin": true
@@ -58,10 +47,15 @@ public class AuthControllerIntTest {
         @Test
         @DisplayName("Test register user OK")
         public void testRegisterUserOK() throws Exception {
-
+                String requestBodyRegisterUser = "{" +
+                                "    \"lastName\": \"tata\"," +
+                                "    \"firstName\": \"tutu\"," +
+                                "    \"email\": \"tutu@gmail.com\"," +
+                                "    \"password\": \"test!1234\"" +
+                                "}";
                 MvcResult result = mockMvc.perform(post("/api/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(this.requestBodyRegisterUser))
+                                .content(requestBodyRegisterUser))
                                 .andExpect(status().isOk())
                                 .andReturn();
                 assertTrue(result.getResponse().getContentAsString().contains("User registered successfully!"));
@@ -70,9 +64,13 @@ public class AuthControllerIntTest {
         @Test
         @DisplayName("Test authenticate user OK")
         public void testAuthenticateUser() throws Exception {
+                String requestBodyUser = "{" +
+                                "    \"email\": \"toto@gmail.com\"," +
+                                "    \"password\": \"test!1234\"" +
+                                "}";
                 MvcResult result = mockMvc.perform(post("/api/auth/login")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(this.requestBodyUser))
+                                .content(requestBodyUser))
                                 .andExpect(status().isOk())
                                 .andReturn();
                 assertTrue(result.getResponse().getContentAsString().contains("\"admin\":false"));
@@ -94,9 +92,15 @@ public class AuthControllerIntTest {
         @Test
         @DisplayName("Test register user already taken")
         public void testRegisterUserAlreadyTaken() throws Exception {
+                String requestBodyRegisterUserAlreadyTaken = "{" +
+                                "    \"lastName\": \"toto\"," +
+                                "    \"firstName\": \"titi\"," +
+                                "    \"email\": \"toto@gmail.com\"," +
+                                "    \"password\": \"test!1234\"" +
+                                "}";
                 MvcResult result = mockMvc.perform(post("/api/auth/register")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(this.requestBodyRegisterUser))
+                                .content(requestBodyRegisterUserAlreadyTaken))
                                 .andExpect(status().isBadRequest())
                                 .andReturn();
                 assertTrue(result.getResponse().getContentAsString().contains("Error: Email is already taken!"));
