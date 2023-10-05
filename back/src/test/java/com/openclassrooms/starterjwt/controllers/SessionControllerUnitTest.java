@@ -88,13 +88,13 @@ public class SessionControllerUnitTest {
                 List<Session> sessionsList = new ArrayList<>();
                 sessionsList.add(new Session((long) 1, "Session pour les nouveaux", null, null, null, null, null,
                                 null));
-                sessionsList.add(new Session((long) 2, "Session avancée", null, null, null, null, null,
+                sessionsList.add(new Session((long) 2, "Session junior", null, null, null, null, null,
                                 null));
 
                 List<SessionDto> dtoSessionsList = new ArrayList<>();
                 dtoSessionsList.add(new SessionDto((long) 1, "Session pour les nouveaux", null, null, null, null, null,
                                 null));
-                dtoSessionsList.add(new SessionDto((long) 2, "Session avancée", null, null, null, null, null, null));
+                dtoSessionsList.add(new SessionDto((long) 2, "Session junior", null, null, null, null, null, null));
 
                 when(sessionService.findAll()).thenReturn(sessionsList);
                 when(sessionMapper.toDto(sessionsList)).thenReturn(dtoSessionsList);
@@ -261,14 +261,14 @@ public class SessionControllerUnitTest {
                 // ACT
                 ResponseEntity<?> response = sessionController.noLongerParticipate(id.toString(), userId.toString());
 
-                // ASSERT : on vérfie le code status OK
+                // ASSERT : on vérifie le code status OK
                 assertEquals(HttpStatus.OK, response.getStatusCode());
         }
 
         @Test
         @DisplayName("Test no longer participate et retourne Bad Request")
         public void testNoLongerParticipateBadRequest() {
-                // ACT : on passe un id qui n'est pas un nombr
+                // ACT : on passe un id qui n'est pas un nombre
                 ResponseEntity<?> response = sessionController.noLongerParticipate("toto", "titi");
 
                 // ASSERT : on s'attend à ce que le code retour soit BAD REQUEST
