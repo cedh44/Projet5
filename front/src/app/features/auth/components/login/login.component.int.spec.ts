@@ -1,19 +1,20 @@
-import {HttpClientModule} from '@angular/common/http';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ReactiveFormsModule} from '@angular/forms';
-import {MatCardModule} from '@angular/material/card';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {RouterTestingModule} from '@angular/router/testing';
-import {expect, jest} from '@jest/globals';
-import {SessionService} from 'src/app/services/session.service';
-import {AuthService} from '../../services/auth.service';
-import {LoginComponent} from './login.component';
-import {Router} from "@angular/router";
-import {SessionInformation} from "../../../../interfaces/sessionInformation.interface";
-import {Observable, of, throwError} from "rxjs";
+import { HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { Router } from "@angular/router";
+import { RouterTestingModule } from '@angular/router/testing';
+import { expect, jest } from '@jest/globals';
+import { Observable, of, throwError } from "rxjs";
+import { SessionService } from 'src/app/services/session.service';
+import { SessionInformation } from "../../../../interfaces/sessionInformation.interface";
+import { AuthService } from '../../services/auth.service';
+import { LoginComponent } from './login.component';
 
 describe('LoginComponent Integration Test Suites', () => {
   let component: LoginComponent;
@@ -21,6 +22,7 @@ describe('LoginComponent Integration Test Suites', () => {
   let sessionService: SessionService;
   let authService: AuthService;
   let router: Router;
+  let controller: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({ // TestBed ; Configures and initializes environment for unit testing and provides methods for creating components and services in unit tests.
@@ -39,6 +41,7 @@ describe('LoginComponent Integration Test Suites', () => {
         RouterTestingModule,
         BrowserAnimationsModule,
         HttpClientModule,
+        HttpClientTestingModule,
         MatCardModule,
         MatIconModule,
         MatFormFieldModule,
@@ -51,6 +54,7 @@ describe('LoginComponent Integration Test Suites', () => {
     authService = TestBed.inject(AuthService);
     sessionService = TestBed.inject(SessionService);
     router = TestBed.inject(Router);
+    controller = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
   });
 
@@ -102,5 +106,24 @@ describe('LoginComponent Integration Test Suites', () => {
     // On vérifie que l'erreur est bien présente
     expect(component.onError).toBeTruthy();
   })
+
+  it('should set on error to true when the login request fails', () => {
+    // On espionne le service authService
+    const spyAuthService = jest.spyOn(authService, 'login');
+    component.submit();
+    
+    //On simule un retour UNAUTHORIZED
+    fixture.whenStable().then(() => {
+      const request = controller.expectOne('api/auth/login');
+      request.flush('Unauthorized', {
+        status: 401,
+        statusText: 'UNAUTHORIZED',
+      });
+      // On vérifie que authService.login a bien été appelée
+      expect(spyAuthService).toHaveBeenCalled();
+      // On vérifie que l'erreur est bien présente
+      expect(component.onError).toBeTruthy();
+    });
+  });
 
 });

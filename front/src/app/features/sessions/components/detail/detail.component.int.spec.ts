@@ -16,7 +16,6 @@ describe('DetailComponent Integration Test Suites', () => {
   let fixture: ComponentFixture<DetailComponent>;
   let sessionApiService: SessionApiService;
   let matSnackBar: MatSnackBar;
-  //TODO : A VIRER SI TOUJOURS KO let router: Router;
 
   const mockSessionService = {
     sessionInformation: {
@@ -46,20 +45,17 @@ describe('DetailComponent Integration Test Suites', () => {
     fixture.detectChanges();
     sessionApiService = TestBed.inject(SessionApiService);
     matSnackBar = TestBed.inject(MatSnackBar);
-    //TODO : A VIRER SI TOUJOURS KO router = TestBed.inject(Router);
   });
 
   it('should delete a session', () => {
+    // On espionne sessionService et matSnackBar
     const spySessionApiService = jest.spyOn(sessionApiService, 'delete').mockReturnValue(of(''));
     const spyMatSnackBar = jest.spyOn(matSnackBar, 'open');
-    //TODO : A VIRER SI TOUJOURS KO const spyRouter = jest.spyOn(router, 'navigate');
     component.delete();
     // On vérifie que sessionApiService.delete.create a bien été appelé
     expect(spySessionApiService).toHaveBeenCalled();
     // On vérifie que matSnackBar.open a bien été appelé avec les bons paramètres
     expect(spyMatSnackBar).toHaveBeenCalledWith('Session deleted !', 'Close', {duration: 3000});
-    // On vérifie que le navigate vers 'sessions' a été appelé
-    //TODO : A VIRER SI TOUJOURS KO expect(spyRouter).toHaveBeenCalledWith('sessions');
   })
 
 });
