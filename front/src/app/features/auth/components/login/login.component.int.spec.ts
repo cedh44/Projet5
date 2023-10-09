@@ -55,6 +55,11 @@ describe('LoginComponent Integration Test Suites', () => {
   });
 
   it('should call submit function of login component OK and return values', () => {
+    // Valorisation du formulaire
+    component.form.setValue({
+      email: 'toto@gmail.com',
+      password: 'toto123!',
+    });
     // Création d'un observable de type SessionInformation
     const sessionInformation$: Observable<SessionInformation> = of({
       token: 'bearer token',
@@ -64,11 +69,6 @@ describe('LoginComponent Integration Test Suites', () => {
       firstName: 'toto',
       lastName: 'toto',
       admin: false,
-    });
-    // Valorisation du formulaire
-    component.form.setValue({
-      email: 'toto@gmail.com',
-      password: 'toto123!',
     });
     // On espionne les services Auth Session et Router
     const spyAuthService = jest.spyOn(authService, 'login').mockReturnValue(sessionInformation$);

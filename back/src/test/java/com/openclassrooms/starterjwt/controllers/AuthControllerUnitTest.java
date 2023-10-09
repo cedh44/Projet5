@@ -111,7 +111,7 @@ public class AuthControllerUnitTest {
 
         // On mock userRepository et passwordEncoder
         when(userRepository.existsByEmail(email)).thenReturn(false);
-        when(passwordEncoder.encode(password)).thenReturn("hashed");
+        when(passwordEncoder.encode(password)).thenReturn("passwordEncode");
         when(userRepository.save(any(User.class))).thenReturn(new User());
 
         // ACT
@@ -125,13 +125,13 @@ public class AuthControllerUnitTest {
 
     @Test
     @DisplayName("Test register email already taken")
-    public void testRegisterEmailAlreaydTaken() {
+    public void testRegisterEmailAlreadyTaken() {
         // ARRANGE
         String email = "toto@gmail.com";
         SignupRequest signupRequest = new SignupRequest();
         signupRequest.setEmail(email);
 
-        // On mock userRepository et passwordEncoder
+        // On mock userRepository
         when(userRepository.existsByEmail(email)).thenReturn(true);
 
         // ACT
