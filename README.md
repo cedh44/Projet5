@@ -18,7 +18,7 @@ Depuis un terminal, placez vous dans un répertoire où déposer les sources et 
 Se connecter en tant que root dans mysql, puis taper :
 - `CREATE DATABASE yoga;`
 - `CREATE USER 'yogauser'@'localhost' IDENTIFIED BY 'yogapass';`
-- `GRANT ALL ON yoga.* to 'yogauser'@'localh ost';`
+- `GRANT ALL ON yoga.* to 'yogauser'@'localhost';`
 - dans un terminal depuis le répertoire racine du Projet5/ressources/sql, taper : `mysql -u root -p yoga < script.sql`
 
 ## Installer l'application
@@ -38,7 +38,7 @@ Se connecter en tant que root dans mysql, puis taper :
   - l'application est disponible à l'url http://localhost:4200/
 
 ### Back :
-  - dans un terminal, depuis le répertoire front : `mvn spring-boot:run`
+  - dans un terminal, depuis le répertoire back : `mvn spring-boot:run`
   - l'application est disponible à l'url http://localhost:8080/ (en tant qu'API)
 
 ## Lancer les tests
