@@ -38,7 +38,7 @@ Se connecter en tant que root dans mysql, puis taper :
   - l'application est disponible à l'url http://localhost:4200/
 
 ### Back :
-  - dans un terminal, depuis le répertoire front : `mvn spring-boot:run`
+  - dans un terminal, depuis le répertoire back : `mvn spring-boot:run`
   - l'application est disponible à l'url http://localhost:8080/ (en tant qu'API)
 
 ## Lancer les tests
