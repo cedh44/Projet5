@@ -105,25 +105,5 @@ describe('LoginComponent Integration Test Suites', () => {
     expect(spyAuthService).toHaveBeenCalled();
     // On vérifie que l'erreur est bien présente
     expect(component.onError).toBeTruthy();
-  })
-
-  it('should set on error to true when the login request fails', () => {
-    // On espionne le service authService
-    const spyAuthService = jest.spyOn(authService, 'login');
-    component.submit();
-    
-    //On simule un retour UNAUTHORIZED
-    fixture.whenStable().then(() => {
-      const request = controller.expectOne('api/auth/login');
-      request.flush('Unauthorized', {
-        status: 401,
-        statusText: 'UNAUTHORIZED',
-      });
-      // On vérifie que authService.login a bien été appelée
-      expect(spyAuthService).toHaveBeenCalled();
-      // On vérifie que l'erreur est bien présente
-      expect(component.onError).toBeTruthy();
-    });
   });
-
 });

@@ -64,7 +64,7 @@ describe('AuthService Test Suites', () => {
       type: 'jwt',
       admin: false,
     };
-    // On appelle la requête via la méthode register avec la requête mockée en paramètre
+    // On appelle la requête via la méthode login avec la requête mockée en paramètre
     authService.login(mockLoginRequest).subscribe(
       sessionInfoReturned => expect(sessionInfoReturned).toEqual(expectedSessionInfo)
     );
