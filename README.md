@@ -13,7 +13,7 @@ Préalablement, il est nécessaire d'avoir sur le poste :
 
 Depuis un terminal, placez vous dans un répertoire où déposer les sources et tapez : `git clone https://github.com/cedh44/Projet5.git`
 
-## Installer de la base de données
+## Installer la base de données
 
 Se connecter en tant que root dans mysql, puis taper :
 - `CREATE DATABASE yoga;`
