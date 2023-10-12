@@ -54,7 +54,6 @@ describe('LoginComponent Integration Test Suites', () => {
     authService = TestBed.inject(AuthService);
     sessionService = TestBed.inject(SessionService);
     router = TestBed.inject(Router);
-    controller = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
   });
 
@@ -90,7 +89,7 @@ describe('LoginComponent Integration Test Suites', () => {
     expect(component.onError).toBeFalsy();
   })
 
-  it('should call submit function of login component with email unregisterd and return error', () => {
+  it('should call submit function of login component with email unregistered and return error', () => {
     // Valorisation du formulaire
     component.form.setValue({
       email: 'emailInexistantEnBase@gmail.com',
