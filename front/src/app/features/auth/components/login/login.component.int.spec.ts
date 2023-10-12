@@ -22,7 +22,6 @@ describe('LoginComponent Integration Test Suites', () => {
   let sessionService: SessionService;
   let authService: AuthService;
   let router: Router;
-  let controller: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({ // TestBed ; Configures and initializes environment for unit testing and provides methods for creating components and services in unit tests.
