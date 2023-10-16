@@ -22,7 +22,6 @@ describe('LoginComponent Integration Test Suites', () => {
   let sessionService: SessionService;
   let authService: AuthService;
   let router: Router;
-  let controller: HttpTestingController;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({ // TestBed ; Configures and initializes environment for unit testing and provides methods for creating components and services in unit tests.
@@ -54,7 +53,6 @@ describe('LoginComponent Integration Test Suites', () => {
     authService = TestBed.inject(AuthService);
     sessionService = TestBed.inject(SessionService);
     router = TestBed.inject(Router);
-    controller = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
   });
 
@@ -90,7 +88,7 @@ describe('LoginComponent Integration Test Suites', () => {
     expect(component.onError).toBeFalsy();
   })
 
-  it('should call submit function of login component with email unregisterd and return error', () => {
+  it('should call submit function of login component with email unregistered and return error', () => {
     // Valorisation du formulaire
     component.form.setValue({
       email: 'emailInexistantEnBase@gmail.com',
