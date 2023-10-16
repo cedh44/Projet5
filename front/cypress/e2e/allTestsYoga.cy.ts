@@ -10,7 +10,7 @@ describe('Login Logout spec', () => {
       statusCode: 401,
       body: {
         error: 'Bad credentials',
-      },
+      },  
     })
 
     cy.get('input[formControlName=email]').type("notfound@studio.com")
@@ -48,20 +48,8 @@ describe('Register spec', () => {
 
     cy.intercept('POST', '/api/auth/register', {
       body: {
-        id: 1,
-        username: 'userName',
-        firstName: 'firstName',
-        lastName: 'lastName',
-        admin: true
       },
     })
-
-    cy.intercept(
-      {
-        method: 'GET',
-        url: '/api/session',
-      },
-      [])
 
     cy.get('input[formControlName=firstName]').type("toto")
     cy.get('input[formControlName=lastName]').type("titi")
