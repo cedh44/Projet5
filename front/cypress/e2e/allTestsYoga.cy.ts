@@ -66,19 +66,6 @@ describe('Register spec', () => {
 describe('Me spec (Register)', () => {
     it('should login successfully and display account informations successfully', () => {
       
-      cy.intercept({
-          method: 'GET',
-          url: '/api/session'
-      })
-  
-      const user = {
-          email: 'toto@gmail.com',
-          firstName: 'toto',
-          lastName: 'titi',
-          admin: false,
-          createdAt: new Date(2023, 9, 21),
-          updatedAt: new Date(2023, 9, 25)
-      }
       // Mock du user en retour
       cy.intercept('GET', '/api/user/1', {
           body: {
@@ -90,6 +77,7 @@ describe('Me spec (Register)', () => {
               updatedAt: new Date(2023, 9, 25)
           }
       })
+
       //Login as a user
       cy.loginUser()
   
